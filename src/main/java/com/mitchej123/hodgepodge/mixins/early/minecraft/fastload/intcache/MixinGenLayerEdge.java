@@ -17,7 +17,8 @@ public class MixinGenLayerEdge {
     @Inject(method = { "getIntsCoolWarm", "getIntsHeatIce", "getIntsSpecial" }, at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(int areaX, int areaY, int areaWidth, int areaHeight,
             CallbackInfoReturnable<int[]> cir, @Local(ordinal = 0) int[] ints) {
-        // Guard against releasing the return value: see MixinCollectOneCache for explanation.
+        // Each method has one parent-input array (ordinal 0) to release; the output is the return value.
+        // Safety guard against any unexpected bytecode layout.
         if (ints != cir.getReturnValue()) releaseCache(ints);
     }
 }

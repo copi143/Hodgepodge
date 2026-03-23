@@ -13,6 +13,8 @@ import net.minecraft.world.gen.layer.GenLayerRiver;
 import net.minecraft.world.gen.layer.GenLayerRiverInit;
 import net.minecraft.world.gen.layer.GenLayerShore;
 import net.minecraft.world.gen.layer.GenLayerSmooth;
+import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
+import net.minecraft.world.gen.layer.GenLayerZoom;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,16 +25,18 @@ import com.llamalad7.mixinextras.sugar.Local;
 
 @Mixin({ GenLayerAddIsland.class, GenLayerAddMushroomIsland.class, GenLayerAddSnow.class, GenLayerBiome.class,
         GenLayerDeepOcean.class, GenLayerRareBiome.class, GenLayerRemoveTooMuchOcean.class, GenLayerRiver.class,
-        GenLayerRiverInit.class, GenLayerShore.class, GenLayerSmooth.class })
+        GenLayerRiverInit.class, GenLayerShore.class, GenLayerSmooth.class, GenLayerVoronoiZoom.class,
+        GenLayerZoom.class })
 public class MixinCollectOneCache {
 
     @Inject(method = { "getInts" }, at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(int areaX, int areaY, int areaWidth, int areaHeight,
             CallbackInfoReturnable<int[]> cir, @Local(ordinal = 0) int[] ints) {
-        // Guard against releasing the return value: in obfuscated (production) bytecode without an LVT,
-        // ProGuard may reuse the parent-input slot for the output array, causing @Local(ordinal=0) to
-        // capture the return value instead of the parent input. Releasing the return value while the
-        // caller still holds a reference causes use-after-free / biome-ID corruption (Ross128b crash).
+        // All classes mixed here have exactly ONE parent-input array (ordinal 0 = aint).
+        // The output array (ordinal 1 = aint2) is the return value and is intentionally
+        // NOT captured by this mixin - it must not be freed here because the caller still
+        // holds a reference to it. The guard below is a safety net against any unexpected
+        // bytecode layout where ordinal 0 might resolve to the return value slot.
         if (ints != cir.getReturnValue()) releaseCache(ints);
     }
 }
