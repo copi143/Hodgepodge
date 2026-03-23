@@ -457,6 +457,16 @@ public class TweaksConfig {
     @Config.RequiresMcRestart
     public static double netherPortalRatio;
 
+    @Config.Comment("Make slimes respect the standard hostile-mob light level requirement (block light <= 7). In vanilla, slimes in slime chunks ignore light level entirely. Useful on servers where caves are disabled.")
+    @Config.DefaultBoolean(false)
+    @Config.RequiresMcRestart
+    public static boolean suppressSlimeSpawnWithLight;
+
+    @Config.Comment("Make bats require dark areas (block light <= 7) in addition to their vanilla checks. Useful on servers where caves are disabled.")
+    @Config.DefaultBoolean(false)
+    @Config.RequiresMcRestart
+    public static boolean suppressBatSpawnWithLight;
+
     @Config.Comment("Remove the notice about numeric ID deprecation that appears when a command uses them")
     @Config.DefaultBoolean(true)
     public static boolean hideDeprecatedIdNotice;

@@ -925,6 +925,14 @@ public enum Mixins implements IMixins {
             .setApplyIf(() -> FixesConfig.maintainSlimeHealth)
             .addCommonMixins("minecraft.MixinEntitySlime_MaintainHealth")
             .setPhase(Phase.EARLY)),
+    SUPPRESS_SLIME_SPAWN_WITH_LIGHT(new MixinBuilder("Prevent slimes from spawning in lit areas (block light > 7)")
+            .setApplyIf(() -> TweaksConfig.suppressSlimeSpawnWithLight)
+            .addCommonMixins("minecraft.MixinEntitySlime_LightSpawnCheck")
+            .setPhase(Phase.EARLY)),
+    SUPPRESS_BAT_SPAWN_WITH_LIGHT(new MixinBuilder("Prevent bats from spawning in lit areas (block light > 7)")
+            .setApplyIf(() -> TweaksConfig.suppressBatSpawnWithLight)
+            .addCommonMixins("minecraft.MixinEntityBat_LightSpawnCheck")
+            .setPhase(Phase.EARLY)),
     EAT_FOOD_IN_CREATIVE(new MixinBuilder("Allow players to eat food in Creative")
             .addCommonMixins("minecraft.MixinEntityPlayer_EatInCreative", "minecraft.MixinItemFood_DontConsumeCreative")
             .setApplyIf(() -> TweaksConfig.allowEatingFoodInCreative)
