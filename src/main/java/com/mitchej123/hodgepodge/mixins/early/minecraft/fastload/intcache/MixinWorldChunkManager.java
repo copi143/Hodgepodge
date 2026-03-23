@@ -44,7 +44,7 @@ public class MixinWorldChunkManager {
     @Inject(method = "getRainfall", at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(float[] p_76936_1_, int p_76936_2_, int p_76936_3_, int p_76936_4_,
             int p_76936_5_, CallbackInfoReturnable<float[]> cir, @Share("cache") LocalRef<int[]> cache) {
-        releaseCache(cache.get());
+        if (cache.get() != null) releaseCache(cache.get());
     }
 
     @Inject(
@@ -62,7 +62,7 @@ public class MixinWorldChunkManager {
     @Inject(method = "getBiomesForGeneration", at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(BiomeGenBase[] p_76937_1_, int p_76937_2_, int p_76937_3_, int p_76937_4_,
             int p_76937_5_, CallbackInfoReturnable<BiomeGenBase[]> cir, @Share("cache") LocalRef<int[]> cache) {
-        releaseCache(cache.get());
+        if (cache.get() != null) releaseCache(cache.get());
     }
 
     @Inject(
@@ -83,7 +83,7 @@ public class MixinWorldChunkManager {
     private void hodgepodge$collectInts(BiomeGenBase[] p_76931_1_, int p_76931_2_, int p_76931_3_, int p_76931_4_,
             int p_76931_5_, boolean p_76931_6_, CallbackInfoReturnable<BiomeGenBase[]> cir,
             @Share("cache") LocalRef<int[]> cache) {
-        releaseCache(cache.get());
+        if (cache.get() != null) releaseCache(cache.get());
     }
 
     @Inject(
@@ -101,7 +101,7 @@ public class MixinWorldChunkManager {
     @Inject(method = "areBiomesViable", at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(int p_76940_1_, int p_76940_2_, int p_76940_3_, List<BiomeGenBase> p_76940_4_,
             CallbackInfoReturnable<Boolean> cir, @Share("cache") LocalRef<int[]> cache) {
-        releaseCache(cache.get());
+        if (cache.get() != null) releaseCache(cache.get());
     }
 
     @Inject(
@@ -120,6 +120,6 @@ public class MixinWorldChunkManager {
     private void hodgepodge$collectInts(int p_150795_1_, int p_150795_2_, int p_150795_3_,
             List<BiomeGenBase> p_150795_4_, Random p_150795_5_, CallbackInfoReturnable<ChunkPosition> cir,
             @Share("cache") LocalRef<int[]> cache) {
-        releaseCache(cache.get());
+        if (cache.get() != null) releaseCache(cache.get());
     }
 }

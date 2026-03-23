@@ -29,6 +29,10 @@ public class MixinCollectOneCache {
     @Inject(method = { "getInts" }, at = @At(value = "RETURN"))
     private void hodgepodge$collectInts(int areaX, int areaY, int areaWidth, int areaHeight,
             CallbackInfoReturnable<int[]> cir, @Local(ordinal = 0) int[] ints) {
-        releaseCache(ints);
+        // Guard against releasing the return value: in obfuscated (production) bytecode without an LVT,
+        // ProGuard may reuse the parent-input slot for the output array, causing @Local(ordinal=0) to
+        // capture the return value instead of the parent input. Releasing the return value while the
+        // caller still holds a reference causes use-after-free / biome-ID corruption (Ross128b crash).
+        if (ints != cir.getReturnValue()) releaseCache(ints);
     }
 }
