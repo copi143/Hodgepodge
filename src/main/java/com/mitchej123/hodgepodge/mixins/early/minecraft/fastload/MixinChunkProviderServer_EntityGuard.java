@@ -10,6 +10,9 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.mitchej123.hodgepodge.mixins.hooks.ChunkGenScheduler;
 import com.mitchej123.hodgepodge.util.ChunkPosUtil;
@@ -39,6 +42,22 @@ public class MixinChunkProviderServer_EntityGuard {
     @Shadow
     public Chunk loadChunk(int x, int z) {
         throw new AssertionError();
+    }
+
+    /**
+     * Guard against double-loading a chunk that is already in memory. Vanilla {@code loadChunk} has no such check:
+     * it always reads from disk, adds the result to {@code loadedChunkHashMap}, fires {@code ChunkEvent.Load}, and
+     * calls {@code onChunkLoad} — even if the chunk is already cached. Without this guard, the blocked-phase disk
+     * load performed by {@link #provideChunk} (see below) and the subsequent load triggered by the
+     * {@code PlayerInstance} constructor both call {@code loadChunk} for the same coordinates, duplicating entities
+     * and TileEntities in the world.
+     */
+    @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
+    private void hodgepodge$returnCachedChunk(int x, int z, CallbackInfoReturnable<Chunk> cir) {
+        final Chunk existing = (Chunk) this.loadedChunkHashMap.getValueByKey(ChunkPosUtil.toLong(x, z));
+        if (existing != null) {
+            cir.setReturnValue(existing);
+        }
     }
 
     /**
