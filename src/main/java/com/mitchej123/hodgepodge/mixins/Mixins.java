@@ -957,6 +957,14 @@ public enum Mixins implements IMixins {
             .addCommonMixins("minecraft.MixinGuiCreateWorld_NotWriteToExistDir")
             .setApplyIf(() -> FixesConfig.fixSaveFileWrittenToExistingDirectory)
             .setPhase(Phase.EARLY)),
+    SUPPRESS_SLIME_SPAWN_WITH_LIGHT(new MixinBuilder("Prevent slimes from spawning in lit areas (block light > 7)")
+            .setApplyIf(() -> TweaksConfig.suppressSlimeSpawnWithLight)
+            .addCommonMixins("minecraft.MixinEntitySlime_LightSpawnCheck")
+            .setPhase(Phase.EARLY)),
+    SUPPRESS_BAT_SPAWN_WITH_LIGHT(new MixinBuilder("Prevent bats from spawning in lit areas (block light > 7)")
+            .setApplyIf(() -> TweaksConfig.suppressBatSpawnWithLight)
+            .addCommonMixins("minecraft.MixinEntityBat_LightSpawnCheck")
+            .setPhase(Phase.EARLY)),
 
     // Ic2 adjustments
     IC2_UNPROTECTED_GET_BLOCK_FIX(new MixinBuilder("IC2 Kinetic Fix")

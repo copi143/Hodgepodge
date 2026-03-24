@@ -224,6 +224,16 @@ public class TweaksConfig {
     @Config.RequiresMcRestart
     public static boolean cleanChatLogs = true;
 
+    @Config.Comment("Make slimes respect the standard hostile-mob light level requirement (block light <= 7).")
+    @Config.DefaultBoolean(false)
+    @Config.RequiresMcRestart
+    public static boolean suppressSlimeSpawnWithLight;
+
+    @Config.Comment("Make bats require dark areas (block light <= 7) in addition to their vanilla checks.")
+    @Config.DefaultBoolean(false)
+    @Config.RequiresMcRestart
+    public static boolean suppressBatSpawnWithLight;
+
     // NBT String Pooling
 
     @Config.Comment("Enable string pooling for NBT TagCompound Keys")
