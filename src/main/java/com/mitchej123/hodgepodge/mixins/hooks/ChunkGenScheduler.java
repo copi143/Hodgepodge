@@ -210,10 +210,20 @@ public class ChunkGenScheduler {
 
         final long now = System.nanoTime();
         final long elapsed = now - serverTickStartNanos;
-        final long tickBudgetNanos = configBudgetNanos > 0 ? Math.min(configBudgetNanos, 50_000_000L - elapsed) : 0;
+        // configBudgetNanos == 0 means "no time limit" (count-based only); use a large sentinel so all
+        // budget checks inside the generation phases pass unconditionally.
+        final long tickBudgetNanos;
+        if (configBudgetNanos == 0) {
+            tickBudgetNanos = Long.MAX_VALUE / 2;
+        } else {
+            final long remaining = 50_000_000L - elapsed;
+            // Keep at least a minimal 1 ms budget so generation is never completely starved on a
+            // slow/laggy tick — the "at least one" guarantees inside each phase prevent unbounded overruns.
+            tickBudgetNanos = remaining > 0 ? Math.min(configBudgetNanos, remaining) : 1_000_000L;
+        }
 
         final boolean inDebt;
-        if (shouldAmortize() && tickBudgetNanos > 0 && budget.hasDebt()) {
+        if (shouldAmortize() && configBudgetNanos > 0 && budget.hasDebt()) {
             budget.payDown(tickBudgetNanos);
             inDebt = true;
         } else {
@@ -264,7 +274,7 @@ public class ChunkGenScheduler {
 
         final long actualNanos = System.nanoTime() - phaseStart;
 
-        if (shouldAmortize() && !inDebt && tickBudgetNanos > 0) {
+        if (shouldAmortize() && !inDebt && configBudgetNanos > 0) {
             budget.recordOverrun(tickBudgetNanos, actualNanos);
         }
 

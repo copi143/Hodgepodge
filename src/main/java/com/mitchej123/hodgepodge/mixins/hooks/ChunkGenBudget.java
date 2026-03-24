@@ -2,8 +2,8 @@ package com.mitchej123.hodgepodge.mixins.hooks;
 
 public class ChunkGenBudget {
 
-    private long terrainGenEmaUs = 150_000;
-    private long populateEmaUs = 150_000;
+    private long terrainGenEmaUs = 5_000;
+    private long populateEmaUs = 5_000;
     // Smoothing factor: 0.15 = new samples move the estimate ~15% per update
     private static final double ALPHA = 0.15;
 
