@@ -37,6 +37,9 @@ public class MixinPacketBuffer {
             return null;
         } else if (shortLength == MAGIC_LENGTH_IS_INT) {
             realLength = self.readInt();
+            if (realLength < 0 || realLength > self.readableBytes()) {
+                throw new IOException("NBT length out of bounds: " + realLength + " (max: " + self.readableBytes() + ")");
+            }
         } else {
             realLength = shortLength;
         }

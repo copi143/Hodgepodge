@@ -179,6 +179,13 @@ public class TileEntityDescriptionBatcher {
                 temp.clear();
 
                 int byteCount = dataBuf.readInt();
+                if (byteCount < 0 || byteCount > dataBuf.readableBytes()) {
+                    LOGGER.error(
+                            "Invalid byteCount {} in batched description packet, stopping parse (readable: {})",
+                            byteCount,
+                            dataBuf.readableBytes());
+                    break;
+                }
                 temp.writeBytes(dataBuf, byteCount);
 
                 S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity();
@@ -209,6 +216,13 @@ public class TileEntityDescriptionBatcher {
                 temp.clear();
 
                 int byteCount = data.readInt();
+                if (byteCount < 0 || byteCount > data.readableBytes()) {
+                    LOGGER.error(
+                            "Invalid byteCount {} in batched description packet, stopping parse (readable: {})",
+                            byteCount,
+                            data.readableBytes());
+                    break;
+                }
                 temp.writeBytes(data, byteCount);
 
                 S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity();
