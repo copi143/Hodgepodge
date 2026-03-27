@@ -164,18 +164,22 @@ public class ServerThreadLongHashMap extends FastUtilLongHashMap {
                 }).get(250, TimeUnit.MILLISECONDS);
             } catch (TimeoutException | InterruptedException e) {
                 if (e instanceof InterruptedException) Thread.currentThread().interrupt();
-                final Long2ObjectOpenHashMap<Object> fallback = snapshot != null ? snapshot
-                        : new Long2ObjectOpenHashMap<>();
-                LOGGER.warn(
-                        "Snapshot creation timed out (server thread may be blocked) - serving {} map to {}",
-                        snapshot != null ? "stale" : "empty",
-                        Thread.currentThread().getName());
-                return fallback;
-            } catch (ExecutionException | IllegalStateException e) {
+                return warnAndFallback("Snapshot creation timed out (server thread may be blocked)");
+            } catch (IllegalStateException e) {
+                // Server not running (e.g. world transition) - serve stale or empty map
+                return warnAndFallback("Snapshot creation skipped (server not running)");
+            } catch (ExecutionException e) {
                 throw new RuntimeException("Failed to create chunk map snapshot", e);
             }
             return snapshot;
         }
+    }
+
+    private Long2ObjectOpenHashMap<Object> warnAndFallback(String reason) {
+        final Long2ObjectOpenHashMap<Object> fallback = snapshot != null ? snapshot : new Long2ObjectOpenHashMap<>();
+        LOGGER.warn("{} - serving {} map to {}", reason, snapshot != null ? "stale" : "empty",
+                Thread.currentThread().getName());
+        return fallback;
     }
 
     private void logOffThread() {
